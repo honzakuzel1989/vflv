@@ -18,6 +18,10 @@
     <PythonWsgiHandler>$(MSBuildProjectName).app</PythonWsgiHandler>
     <Name>LunchVoting</Name>
     <RootNamespace>LunchVoting</RootNamespace>
+    <CommandLineArguments>
+    </CommandLineArguments>
+    <InterpreterId>{9a7a9026-48c1-4688-9d5d-e5699d47d074}</InterpreterId>
+    <InterpreterVersion>2.7</InterpreterVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
     <DebugSymbols>true</DebugSymbols>
@@ -28,7 +32,10 @@
     <EnableUnmanagedDebugging>false</EnableUnmanagedDebugging>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="LunchVoting\presenters.py">
+    <Compile Include="LunchVoting\database.py">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="LunchVoting\proxy.py">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="runserver.py" />
@@ -37,6 +44,7 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="LunchVoting\" />
+    <Folder Include="LunchVoting\sql\" />
     <Folder Include="LunchVoting\static\" />
     <Folder Include="LunchVoting\static\content\" />
     <Folder Include="LunchVoting\static\fonts\" />
@@ -44,6 +52,7 @@
     <Folder Include="LunchVoting\templates\" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="LunchVoting\sql\vflv.sql" />
     <Content Include="LunchVoting\templates\voting.html" />
     <Content Include="LunchVoting\templates\login.html" />
     <Content Include="requirements.txt" />
@@ -70,6 +79,9 @@
     <Content Include="LunchVoting\static\scripts\respond.min.js" />
     <Content Include="LunchVoting\static\scripts\_references.js" />
     <Content Include="LunchVoting\templates\layout.html" />
+  </ItemGroup>
+  <ItemGroup>
+    <InterpreterReference Include="{9a7a9026-48c1-4688-9d5d-e5699d47d074}\2.7" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\Python Tools\Microsoft.PythonTools.Web.targets" />
   <!-- Specify pre- and post-build commands in the BeforeBuild and 
