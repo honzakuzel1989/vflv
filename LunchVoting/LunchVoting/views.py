@@ -47,3 +47,9 @@ def logout():
     session.pop('logged_in', None)
     flash('You were logged out')
     return redirect(url_for('login'))
+
+@app.cli.command('initdb')
+def initdb_command():
+    """Creates the database structure."""
+    p.init_db()
+    print('Initialized the database structure.')
