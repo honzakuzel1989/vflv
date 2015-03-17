@@ -46,19 +46,22 @@ app.config.update(dict(
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
-   error = None
-   if request.method == 'POST':
-       if p.check_auth(request.form['username'], request.form['password']):
-           session['logged_in'] = True
-           return render_template(
-            'contact.html',
-            title='Contact',
-            year=datetime.now().year,
-            message='Your contact page.'
-           )
-   return render_template(
-       'login.html', 
-       title='Login',
-       year=datetime.now().year,
-       message='Login page.',
-       error=error)
+    error = None
+    if request.method == 'POST':
+        if p.check_auth(request.form['username'], request.form['password']):
+            session['logged_in'] = True
+            flash('You were logged in')
+    
+            return render_template(
+             'voting.html',
+             title='Contact',
+             year=datetime.now().year,
+             message='Your contact page.'
+            )
+    # GET
+    return render_template(
+        'login.html', 
+        title='Login',
+        year=datetime.now().year,
+        message='Login page.',
+        error=error)
