@@ -44,6 +44,7 @@
     <Folder Include="LunchVoting\templates\" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="LunchVoting\templates\voting.html" />
     <Content Include="LunchVoting\templates\login.html" />
     <Content Include="requirements.txt" />
     <Content Include="LunchVoting\static\content\bootstrap.css" />

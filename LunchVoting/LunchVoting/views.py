@@ -6,7 +6,7 @@ import os
 import LunchVoting.presenters as p
 
 from datetime import datetime
-from flask import Flask, request, session, g, redirect, url_for, abort, render_template
+from flask import Flask, request, session, g, redirect, url_for, abort, render_template, flash
 from LunchVoting import app
 
 @app.route('/')
@@ -44,6 +44,17 @@ app.config.update(dict(
     PASSWORD='pass'
 ))
 
+@app.route('/voting')
+def voting():
+    if not session.get('logged_in'):
+        abort(401)
+    return render_template(
+             'voting.html',
+             title='Voting',
+             year=datetime.now().year,
+             message='Your voting page.'
+            )
+
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     error = None
@@ -51,13 +62,7 @@ def login():
         if p.check_auth(request.form['username'], request.form['password']):
             session['logged_in'] = True
             flash('You were logged in')
-    
-            return render_template(
-             'voting.html',
-             title='Contact',
-             year=datetime.now().year,
-             message='Your contact page.'
-            )
+            return redirect(url_for('voting'))
     # GET
     return render_template(
         'login.html', 
@@ -65,3 +70,9 @@ def login():
         year=datetime.now().year,
         message='Login page.',
         error=error)
+
+@app.route('/logout')
+def logout():
+    session.pop('logged_in', None)
+    flash('You were logged out')
+    return redirect(url_for('home'))
