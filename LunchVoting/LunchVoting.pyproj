@@ -69,9 +69,6 @@
     <Content Include="LunchVoting\static\scripts\respond.js" />
     <Content Include="LunchVoting\static\scripts\respond.min.js" />
     <Content Include="LunchVoting\static\scripts\_references.js" />
-    <Content Include="LunchVoting\templates\about.html" />
-    <Content Include="LunchVoting\templates\contact.html" />
-    <Content Include="LunchVoting\templates\index.html" />
     <Content Include="LunchVoting\templates\layout.html" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\Python Tools\Microsoft.PythonTools.Web.targets" />
