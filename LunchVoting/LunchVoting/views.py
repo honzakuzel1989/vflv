@@ -4,10 +4,16 @@ Routes and views for the flask application.
 
 import os
 
+from hashlib import sha256 as sha
 from sqlite3 import dbapi2 as sqlite3
 from datetime import datetime
 from flask import Flask, request, session, redirect, url_for, abort, render_template, flash, g
 from LunchVoting import app, proxy
+
+def __compute_hash_in_hex(password):
+    hash_object = sha(password)
+    hex_dig = hash_object.hexdigest()
+    return hex_dig
 
 @app.cli.command('initdb')
 def initdb_command():
@@ -27,6 +33,14 @@ def get_db():
         g.sqlite_db = connect_db()
     return g.sqlite_db
 
+def __insert_users():
+    db = get_db()
+    users_data = app.config['USERS']
+    for (user, pwd) in users_data:
+        db.execute('insert into users (name, pass) values (?, ?)', [user, __compute_hash_in_hex(pwd)])
+    db.commit()
+    flash('New users was successfully inserted')
+
 def init_db():
     """Initializes the database."""
     db = get_db()
@@ -34,9 +48,19 @@ def init_db():
         db.cursor().executescript(f.read())
     db.commit()
 
-def check_auth():
+    __insert_users()
+
+def check_auth(username, password):
     """Check authorization."""
-    return True
+    db = get_db()
+    cur = db.execute('select pass from users where name = ?', [username])
+    entries = cur.fetchall()
+
+    if len(entries) != 1:
+        return False
+
+    pass_h = entries[0]['pass']
+    return pass_h == __compute_hash_in_hex(password)
 
 @app.teardown_appcontext
 def close_db(error):
