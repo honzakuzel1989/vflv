@@ -28,6 +28,9 @@
     <EnableUnmanagedDebugging>false</EnableUnmanagedDebugging>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="LunchVoting\presenters.py">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="runserver.py" />
     <Compile Include="LunchVoting\__init__.py" />
     <Compile Include="LunchVoting\views.py" />
@@ -41,6 +44,7 @@
     <Folder Include="LunchVoting\templates\" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="LunchVoting\templates\login.html" />
     <Content Include="requirements.txt" />
     <Content Include="LunchVoting\static\content\bootstrap.css" />
     <Content Include="LunchVoting\static\content\bootstrap.min.css" />
