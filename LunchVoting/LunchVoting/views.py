@@ -33,22 +33,6 @@ def get_db():
         g.sqlite_db = connect_db()
     return g.sqlite_db
 
-def __insert_users():
-    db = get_db()
-    users_data = app.config['USERS']
-    for (user, pwd) in users_data:
-        db.execute('insert into users (name, pass) values (?, ?)', [user, __compute_hash_in_hex(pwd)])
-    db.commit()
-    flash('New users was successfully inserted')
-
-def __insert_pubs():
-    db = get_db()
-    pubs_data = app.config['PUBS']
-    for pub in pubs_data:
-        db.execute('insert into pubs (title) values (?)', [pub])
-    db.commit()
-    flash('New pubs was successfully inserted')
-
 def __get_logged_user():
     return session.get('logged_user')
 
@@ -64,9 +48,6 @@ def init_db():
     with app.open_resource('sql/vflv.sql', mode='r') as f:
         db.cursor().executescript(f.read())
     db.commit()
-
-    __insert_users()
-    __insert_pubs()
 
 def check_auth(username, password):
     """Check authorization."""
@@ -90,7 +71,8 @@ def get_pubs():
 
 def get_actual_voting():
     db = get_db()
-    cur = db.execute('select * from votings where date=? and user=?', [__get_current_time_in_s(), __get_logged_user()])
+    cur = db.execute('select * from votings where date=? and user=?', 
+        [__get_current_time_in_s(), __get_logged_user()])
     entries = cur.fetchall()
     return entries
 
@@ -156,33 +138,46 @@ def login():
         logged_in=False,
         error=error)
 
+def __get_pubs_items(pubs, day_voting):
+    pubs_items = []
+    for p in pubs:
+        has_voting = False
+        for dv in day_voting:
+            if p['title'] == dv['pub']:
+                pubs_items.append((p, dv))
+                has_voting = True
+                break
+        if not has_voting:
+            pubs_items.append((p, None))
+    return pubs_items
+
 @app.route('/voting', methods=['GET', 'POST'])
 def voting():
     if not session.get('logged_user'):
         abort(401)
+
     error = None
+    pubs = get_pubs()
     day_voting = get_actual_voting()
+    pubs_items = __get_pubs_items(pubs, day_voting)
 
     if request.method == 'POST':
         pass
 
-        pubs = get_pubs()
         form_voting_items = [(p['id'], request.form[str(p['id'])]) for p in pubs]
-
+                    
         retval, error = vote(day_voting, form_voting_items)
         if retval:
             flash('You voted')
             return redirect(url_for('voting'))
     # GET
-    # TODO: musi se overovat zda uz nehlasoval
     return render_template(
              'voting.html',
              title='Voting',
              year=datetime.now().year,
              logged_in=True,
-             pubs=get_pubs(),
-             error=error,
-             day_voting=day_voting
+             pubs_items=pubs_items,
+             error=error
             )
 
 @app.route('/logout')
