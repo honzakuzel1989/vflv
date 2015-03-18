@@ -31,13 +31,13 @@
     </div>
 
     <div class="container body-content">
+        <h2>{{ title }}.</h2>
+        
+        {% if error %}
+        <strong>{{ error }}.</strong>
+        {% endif %}
+        
         {% block content %}{% endblock %}
-
-            <br/>
-            {% if error %}
-            <strong>{{ error }}</strong>
-            {% endif %}
-            <br/>
         <hr />
         <footer>
             <p>&copy; {{ year }} - VF, a.s.</p>

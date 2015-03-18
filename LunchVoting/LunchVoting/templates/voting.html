@@ -2,8 +2,6 @@
 
 {% block content %}
 
-<h2>{{ title }}.</h2>
-
 <form action="{{ url_for('voting') }}" method="post">
     <dl>
         {% for (pub, voting, sum) in pubs_items %}
