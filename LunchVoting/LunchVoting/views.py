@@ -52,7 +52,7 @@ def init_db():
 def check_auth(username, password):
     """Check authorization"""
     db = get_db()
-    cur = db.execute('select pass from users where name = ?', [username])
+    cur = db.execute('select pass from users where name=?', [username])
     entries = cur.fetchall()
 
     if len(entries) != 1:
@@ -75,19 +75,44 @@ def get_actual_voting():
         [__get_current_time_in_s(), __get_logged_user()])
     entries = cur.fetchall()
     return entries
+    
+def get_actual_sum(pub_id):
+    db = get_db()
+    cur = db.execute('select sum(rating) as psum from votings where date=? and pub=?', 
+        [__get_current_time_in_s(), pub_id])
+    psum = cur.fetchall()[0]['psum']
+    return psum if psum else 0
 
 def __verify_voting_values(form_voting_items):
     # max 3 hlasovani
     # min hodnota 1
     # max hodnota 3
+    # zadne stejne hodnoty
     cnt = 0
+    ivals = []
     for (_, val) in form_voting_items:
         if val:
             cnt += 1
-            if not 0 < int(val) < 4:
+            ival = 0
+            
+            try:
+                ival = int(val)
+            except ValueError:
+                return (False, 'Invalid input of voting (values=1,2,3,4)')
+            if not 0 < ival < 4:
                 return (False, 'Invalid value of voting (min=1, max=3)')
+            if ival in ivals:
+                return (False, 'Invalid value of voting (values must be unique)')
+            ivals.append(ival)
     retval = 0 < cnt < 4
     return (True, None) if 0 < cnt < 4 else (False, 'Invalid number of votings (min=1, max=3)')
+
+def __delete_voting():
+    db = get_db()
+    db.execute('delete from votings where date=? and user=?', 
+        [__get_current_time_in_s(), __get_logged_user()])
+    db.commit()
+    flash('Old voting was successfully inserted')
 
 def __insert_voting(pub_id, rating):
     db = get_db()
@@ -95,7 +120,7 @@ def __insert_voting(pub_id, rating):
     pubs = cur.fetchall()
 
     db.execute('insert into votings (date, user, pub, rating) values (?, ?, ?, ?)', 
-        [__get_current_time_in_s(), __get_logged_user(), pubs[0]['title'], int(rating)])
+        [__get_current_time_in_s(), __get_logged_user(), pubs[0]['title'], rating])
     db.commit()
     flash('New voting was successfully inserted')
 
@@ -106,11 +131,11 @@ def vote(day_voting, form_voting_items):
 
     # formular spravne vyplnen - rozdeleni zda uz dnes hlasoval
     if day_voting:
-        pass
-    else:
-        for (pub_id, rating) in form_voting_items:
-            if rating:
-                __insert_voting(pub_id, rating)
+        __delete_voting()
+        
+    for (pub_id, rating) in form_voting_items:
+        if rating:
+            __insert_voting(pub_id, int(rating))
 
     return (True, None)
 
@@ -135,20 +160,20 @@ def login():
         'login.html',
         title='Login',
         year=datetime.now().year,
-        logged_in=False,
+        _user=__get_logged_user(),
         error=error)
 
-def __get_pubs_items(pubs, day_voting):
+def __get_pubs_items(pubs, day_votings, day_sums):
     pubs_items = []
     for p in pubs:
         has_voting = False
-        for dv in day_voting:
+        for dv in day_votings:
             if p['title'] == dv['pub']:
-                pubs_items.append((p, dv))
+                pubs_items.append((p, dv, day_sums[p['id']]))
                 has_voting = True
                 break
         if not has_voting:
-            pubs_items.append((p, None))
+            pubs_items.append((p, None, day_sums[p['id']]))
     return pubs_items
 
 @app.route('/voting', methods=['GET', 'POST'])
@@ -158,15 +183,16 @@ def voting():
 
     error = None
     pubs = get_pubs()
-    day_voting = get_actual_voting()
-    pubs_items = __get_pubs_items(pubs, day_voting)
+    day_votings = get_actual_voting()
+    day_sums = {p['id']: get_actual_sum(p['title']) for p in pubs}
+    pubs_items = __get_pubs_items(pubs, day_votings, day_sums)
 
     if request.method == 'POST':
         pass
 
         form_voting_items = [(p['id'], request.form[str(p['id'])]) for p in pubs]
                     
-        retval, error = vote(day_voting, form_voting_items)
+        retval, error = vote(day_votings, form_voting_items)
         if retval:
             flash('You voted')
             return redirect(url_for('voting'))
@@ -175,14 +201,14 @@ def voting():
              'voting.html',
              title='Voting',
              year=datetime.now().year,
-             logged_in=True,
+             logged_user=__get_logged_user(),
              pubs_items=pubs_items,
              error=error
             )
 
 @app.route('/logout')
 def logout():
-    session.pop('logged_in', None)
+    session.pop('logged_user', None)
     flash('You were logged out')
     return redirect(url_for('login'))
 
