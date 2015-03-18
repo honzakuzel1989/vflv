@@ -100,10 +100,24 @@ def login():
         logged_in=False,
         error=error)
 
-@app.route('/voting')
+@app.route('/voting', methods=['GET', 'POST'])
 def voting():
     if not session.get('logged_in'):
         abort(401)
+    error = None
+    if request.method == 'POST':
+        pass
+
+        pubs = get_pubs()
+        voting_items = [request.form[str(p['id'])] for p in pubs]
+
+        if vote(voting_items):
+            flash('You voted')
+            return redirect(url_for('voting'))
+        else:
+            pass
+    # GET
+    # TODO: musi se overovat zda uz nehlasoval
     return render_template(
              'voting.html',
              title='Voting',
