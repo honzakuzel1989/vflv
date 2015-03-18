@@ -41,6 +41,14 @@ def __insert_users():
     db.commit()
     flash('New users was successfully inserted')
 
+def __insert_pubs():
+    db = get_db()
+    pubs_data = app.config['PUBS']
+    for pub in pubs_data:
+        db.execute('insert into pubs (title) values (?)', [pub])
+    db.commit()
+    flash('New pubs was successfully inserted')
+
 def init_db():
     """Initializes the database."""
     db = get_db()
@@ -49,6 +57,7 @@ def init_db():
     db.commit()
 
     __insert_users()
+    __insert_pubs()
 
 def check_auth(username, password):
     """Check authorization."""
@@ -61,6 +70,12 @@ def check_auth(username, password):
 
     pass_h = entries[0]['pass']
     return pass_h == __compute_hash_in_hex(password)
+
+def get_pubs():
+    db = get_db()
+    cur = db.execute('select * from pubs')
+    entries = cur.fetchall()
+    return entries
 
 @app.teardown_appcontext
 def close_db(error):
@@ -93,7 +108,8 @@ def voting():
              'voting.html',
              title='Voting',
              year=datetime.now().year,
-             logged_in=True
+             logged_in=True,
+             pubs=get_pubs()
             )
 
 @app.route('/logout')

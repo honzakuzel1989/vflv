@@ -14,7 +14,8 @@ if __name__ == '__main__':
         DATABASE=os.path.join(app.root_path, 'vflv.db'),
         USERNAME='admin',
         PASSWORD='pass',
-        USERS=[('kuz1', 'kuz1'), ('kli1', 'kli1'), ('mar5', 'mar5'), ('kor1', 'kor1'), ('dyc1', 'dyc1')]
+        USERS=[('kuz1', 'kuz1'), ('kli1', 'kli1'), ('mar5', 'mar5'), ('kor1', 'kor1'), ('dyc1', 'dyc1')],
+        PUBS=['Aqua', 'Kopec', u'Kruháè', u'Liïák', 'Picolo', 'Sladovna', u'Sýpka', 'Zakki']
     ))
 
     HOST = environ.get('SERVER_HOST', 'localhost')

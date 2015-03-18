@@ -32,12 +32,6 @@
     <EnableUnmanagedDebugging>false</EnableUnmanagedDebugging>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="LunchVoting\database.py">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="LunchVoting\proxy.py">
-      <SubType>Code</SubType>
-    </Compile>
     <Compile Include="runserver.py" />
     <Compile Include="LunchVoting\__init__.py" />
     <Compile Include="LunchVoting\views.py" />
