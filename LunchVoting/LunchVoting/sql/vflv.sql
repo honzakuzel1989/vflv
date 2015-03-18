@@ -17,7 +17,7 @@ drop table if exists votings;
 create table votings (
 	id INTEGER primary key autoincrement,
 	date INTEGER not null,
-	user TEXT not null,
-	pub TEXT not null,
+	user TEXT unique not null,
+	pub TEXT unique not null,
 	rating INTEGER not null
 );

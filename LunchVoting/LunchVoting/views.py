@@ -49,6 +49,15 @@ def __insert_pubs():
     db.commit()
     flash('New pubs was successfully inserted')
 
+def __get_logged_user():
+    return session.get('logged_user')
+
+def __get_current_time_in_s():
+    dt_now = datetime.now()
+    dt_now_trunc = dt_now.replace(hour=0, minute=0, second=0, microsecond=0)
+    dt_now_in_s = int((dt_now_trunc - datetime(1970,1,1)).total_seconds())
+    return dt_now_in_s
+
 def init_db():
     """Initializes the database."""
     db = get_db()
@@ -79,7 +88,14 @@ def get_pubs():
     entries = cur.fetchall()
     return entries
 
-def vote(voting_items):
+def get_actual_voting():
+    db = get_db()
+    cur = db.execute('select * from votings where date=? and user=?', [__get_current_time_in_s(), __get_logged_user()])
+    entries = cur.fetchall()
+    return entries
+
+def vote(user, voting_items):
+
     return (True, None)
 
 @app.teardown_appcontext
@@ -95,7 +111,7 @@ def login():
     if request.method == 'POST':
         retval, error = check_auth(request.form['username'], request.form['password'])
         if retval:
-            session['logged_in'] = True
+            session['logged_user'] = request.form['username']
             flash('You were logged in')
             return redirect(url_for('voting'))
     # GET
@@ -108,16 +124,18 @@ def login():
 
 @app.route('/voting', methods=['GET', 'POST'])
 def voting():
-    if not session.get('logged_in'):
+    if not session.get('logged_user'):
         abort(401)
     error = None
+    actual_voting = get_actual_voting()
+
     if request.method == 'POST':
         pass
 
         pubs = get_pubs()
         voting_items = [(p['id'], request.form[str(p['id'])]) for p in pubs]
 
-        retval, error = vote(voting_items)
+        retval, error = vote(session['logged_user'], voting_items)
         if retval:
             flash('You voted')
             return redirect(url_for('voting'))
@@ -129,7 +147,8 @@ def voting():
              year=datetime.now().year,
              logged_in=True,
              pubs=get_pubs(),
-             error=error
+             error=error,
+             actual_voting=actual_voting
             )
 
 @app.route('/logout')
