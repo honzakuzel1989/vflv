@@ -66,16 +66,21 @@ def check_auth(username, password):
     entries = cur.fetchall()
 
     if len(entries) != 1:
-        return False
+        return (False, 'Invalid username.')
 
     pass_h = entries[0]['pass']
-    return pass_h == __compute_hash_in_hex(password)
+    verif = pass_h == __compute_hash_in_hex(password)
+
+    return (True, None) if verif else (False, 'Invalid password.')
 
 def get_pubs():
     db = get_db()
     cur = db.execute('select * from pubs')
     entries = cur.fetchall()
     return entries
+
+def vote(voting_items):
+    return (True, None)
 
 @app.teardown_appcontext
 def close_db(error):
@@ -88,7 +93,8 @@ def close_db(error):
 def login():
     error = None
     if request.method == 'POST':
-        if check_auth(request.form['username'], request.form['password']):
+        retval, error = check_auth(request.form['username'], request.form['password'])
+        if retval:
             session['logged_in'] = True
             flash('You were logged in')
             return redirect(url_for('voting'))
@@ -109,13 +115,12 @@ def voting():
         pass
 
         pubs = get_pubs()
-        voting_items = [request.form[str(p['id'])] for p in pubs]
+        voting_items = [(p['id'], request.form[str(p['id'])]) for p in pubs]
 
-        if vote(voting_items):
+        retval, error = vote(voting_items)
+        if retval:
             flash('You voted')
             return redirect(url_for('voting'))
-        else:
-            pass
     # GET
     # TODO: musi se overovat zda uz nehlasoval
     return render_template(
@@ -123,7 +128,8 @@ def voting():
              title='Voting',
              year=datetime.now().year,
              logged_in=True,
-             pubs=get_pubs()
+             pubs=get_pubs(),
+             error=error
             )
 
 @app.route('/logout')

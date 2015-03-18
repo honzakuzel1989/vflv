@@ -32,6 +32,11 @@
 
     <div class="container body-content">
         {% block content %}{% endblock %}
+
+        {% if error %}
+        <br/>
+        {{ error }}
+        {% endif %}
         <hr />
         <footer>
             <p>&copy; {{ year }} - My Flask Application</p>
