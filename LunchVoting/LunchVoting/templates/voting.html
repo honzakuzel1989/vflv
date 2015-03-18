@@ -8,7 +8,13 @@
     <dl>
         {% for pub in pubs %}
         <dt>{{ pub.title|e }}</dt>
-        <dd><input type="text" name="{{ pub.id }}"></dd>
+            {% for voting in day_voting %}
+                {% if voting.pub == pub.title %}
+                <dd><input type="text" name="{{ pub.id }}" value="{{ voting.rating }}"></dd>
+                {% else %}
+                <dd><input type="text" name="{{ pub.id }}"></dd>
+                {% endif %}
+            {% endfor %}
         {% endfor %}
     </dl>
     <input type="submit" value="Voting">

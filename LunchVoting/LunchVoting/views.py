@@ -94,7 +94,41 @@ def get_actual_voting():
     entries = cur.fetchall()
     return entries
 
-def vote(user, voting_items):
+def __verify_voting_values(form_voting_items):
+    # max 3 hlasovani
+    # min hodnota 1
+    # max hodnota 3
+    cnt = 0
+    for (_, val) in form_voting_items:
+        if val:
+            cnt += 1
+            if not 0 < int(val) < 4:
+                return (False, '')
+    retval = 0 < cnt < 4
+    return (True, None) if 0 < cnt < 4 else (False, '')
+
+def __insert_voting(pub_id, rating):
+    db = get_db()
+    cur = db.execute('select * from pubs where id = ?', [pub_id])
+    pubs = cur.fetchall()
+
+    db.execute('insert into votings (date, user, pub, rating) values (?, ?, ?, ?)', 
+        [__get_current_time_in_s(), __get_logged_user(), pubs[0]['title'], int(rating)])
+    db.commit()
+    flash('New voting was successfully inserted')
+
+def vote(day_voting, form_voting_items):
+    retval, error = __verify_voting_values(form_voting_items)
+    if not retval:
+        return (False, error)
+
+    # formular spravne vyplnen - rozdeleni zda uz dnes hlasoval
+    if day_voting:
+        pass
+    else:
+        for (pub_id, rating) in form_voting_items:
+            if rating:
+                __insert_voting(pub_id, rating)
 
     return (True, None)
 
@@ -127,15 +161,15 @@ def voting():
     if not session.get('logged_user'):
         abort(401)
     error = None
-    actual_voting = get_actual_voting()
+    day_voting = get_actual_voting()
 
     if request.method == 'POST':
         pass
 
         pubs = get_pubs()
-        voting_items = [(p['id'], request.form[str(p['id'])]) for p in pubs]
+        form_voting_items = [(p['id'], request.form[str(p['id'])]) for p in pubs]
 
-        retval, error = vote(session['logged_user'], voting_items)
+        retval, error = vote(day_voting, form_voting_items)
         if retval:
             flash('You voted')
             return redirect(url_for('voting'))
@@ -148,7 +182,7 @@ def voting():
              logged_in=True,
              pubs=get_pubs(),
              error=error,
-             actual_voting=actual_voting
+             day_voting=day_voting
             )
 
 @app.route('/logout')
