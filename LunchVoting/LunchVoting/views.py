@@ -50,18 +50,18 @@ def init_db():
     db.commit()
 
 def check_auth(username, password):
-    """Check authorization."""
+    """Check authorization"""
     db = get_db()
     cur = db.execute('select pass from users where name = ?', [username])
     entries = cur.fetchall()
 
     if len(entries) != 1:
-        return (False, 'Invalid username.')
+        return (False, 'Invalid username')
 
     pass_h = entries[0]['pass']
     verif = pass_h == __compute_hash_in_hex(password)
 
-    return (True, None) if verif else (False, 'Invalid password.')
+    return (True, None) if verif else (False, 'Invalid password')
 
 def get_pubs():
     db = get_db()
@@ -85,9 +85,9 @@ def __verify_voting_values(form_voting_items):
         if val:
             cnt += 1
             if not 0 < int(val) < 4:
-                return (False, '')
+                return (False, 'Invalid value of voting (min=1, max=3)')
     retval = 0 < cnt < 4
-    return (True, None) if 0 < cnt < 4 else (False, '')
+    return (True, None) if 0 < cnt < 4 else (False, 'Invalid number of votings (min=1, max=3)')
 
 def __insert_voting(pub_id, rating):
     db = get_db()
@@ -185,3 +185,4 @@ def logout():
     session.pop('logged_in', None)
     flash('You were logged out')
     return redirect(url_for('login'))
+
