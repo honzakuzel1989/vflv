@@ -8,7 +8,7 @@ from hashlib import sha256 as sha
 from sqlite3 import dbapi2 as sqlite3
 from datetime import datetime
 from flask import Flask, request, session, redirect, url_for, abort, render_template, flash, g
-from LunchVoting import app, proxy
+from LunchVoting import app
 
 def __compute_hash_in_hex(password):
     hash_object = sha(password)
