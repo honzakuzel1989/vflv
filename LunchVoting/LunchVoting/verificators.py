@@ -2,6 +2,8 @@
 Verificators
 """
 
+import re
+
 def verify_password(password):
     # delka alespon 4
     # alespon jedno cislo

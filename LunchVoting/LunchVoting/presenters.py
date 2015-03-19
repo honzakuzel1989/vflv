@@ -31,17 +31,17 @@ def get_pubs_items(pubs, day_votings, day_sums):
             pubs_items.append((p, None, day_sums[p['id']]))
     return pubs_items
 
-def vote(day_voting, form_voting_items):
+def vote(user, day_voting, form_voting_items):
     retval, error = v.verify_voting_values(form_voting_items)
     if not retval:
         return (False, error)
 
     if day_voting:
-        dal.delete_actual_voting(__get_logged_user())
+        dal.delete_actual_voting(user)
         
     for (pub_id, rating) in form_voting_items:
         if rating:
-            dal.insert_voting(__get_logged_user, pub_id, int(rating))
+            dal.insert_voting(user, pub_id, int(rating))
 
     return (True, None)
     
