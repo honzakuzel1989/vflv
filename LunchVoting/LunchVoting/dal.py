@@ -27,3 +27,10 @@ def get_actual_voting_for_user(user):
         [h.get_current_time_in_s(), user])
     entries = cur.fetchall()
     return entries
+    
+def get_actual_sum(pub_id):
+    db = d.get_db()
+    cur = db.execute('select sum(rating) as psum from votings where date=? and pub=?', 
+        [h.get_current_time_in_s(), pub_id])
+    psum = cur.fetchall()[0]['psum']
+    return psum if psum else 0

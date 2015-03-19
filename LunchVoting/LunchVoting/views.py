@@ -33,13 +33,6 @@ def check_auth(username, password):
     verif = pass_h == h.compute_hash_in_hex(password)
 
     return (True, None) if verif else (False, 'Invalid password')
-    
-def get_actual_sum(pub_id):
-    db = d.get_db()
-    cur = db.execute('select sum(rating) as psum from votings where date=? and pub=?', 
-        [h.get_current_time_in_s(), pub_id])
-    psum = cur.fetchall()[0]['psum']
-    return psum if psum else 0
 
 def __update_password(new_pass):
     db = d.get_db()
@@ -164,7 +157,7 @@ def voting():
     error = None
     pubs = dal.get_pubs()
     day_votings = dal.get_actual_voting_for_user(__get_logged_user())
-    day_sums = {p['id']: get_actual_sum(p['title']) for p in pubs}
+    day_sums = {p['id']: dal.get_actual_sum(p['title']) for p in pubs}
     pubs_items = get_pubs_items(pubs, day_votings, day_sums)
 
     if request.method == 'POST':
