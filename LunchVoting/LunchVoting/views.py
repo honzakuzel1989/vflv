@@ -4,6 +4,7 @@ Routes and views for the flask application.
 
 import os
 import re
+import dal
 import helpers as h
 import database as d
 import verificators as v
@@ -23,9 +24,7 @@ def __get_logged_user():
 
 def check_auth(username, password):
     """Check authorization"""
-    db = d.get_db()
-    cur = db.execute('select pass from users where name=?', [username])
-    entries = cur.fetchall()
+    entries = dal.get_user_by_username(username)
 
     if len(entries) != 1:
         return (False, 'Invalid username')
@@ -35,15 +34,9 @@ def check_auth(username, password):
 
     return (True, None) if verif else (False, 'Invalid password')
 
-def get_pubs():
-    db = d.get_db()
-    cur = db.execute('select * from pubs')
-    entries = cur.fetchall()
-    return entries
-
 def get_actual_voting_for_all_user():
     db = d.get_db()
-    cur = db.execute('select * from votings where date=?    ', 
+    cur = db.execute('select * from votings where date=?', 
         [h.get_current_time_in_s()])
     entries = cur.fetchall()
     return entries
@@ -85,7 +78,7 @@ def __insert_voting(pub_id, rating):
     db.commit()
     flash('New voting was successfully inserted')
 
-def __get_pubs_items(pubs, day_votings, day_sums):
+def get_pubs_items(pubs, day_votings, day_sums):
     pubs_items = []
     for p in pubs:
         has_voting = False
@@ -183,10 +176,10 @@ def voting():
         abort(401)
 
     error = None
-    pubs = get_pubs()
+    pubs = dal.get_pubs()
     day_votings = get_actual_voting_for_logged_user()
     day_sums = {p['id']: get_actual_sum(p['title']) for p in pubs}
-    pubs_items = __get_pubs_items(pubs, day_votings, day_sums)
+    pubs_items = get_pubs_items(pubs, day_votings, day_sums)
 
     if request.method == 'POST':
         pass
