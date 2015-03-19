@@ -34,13 +34,6 @@ def check_auth(username, password):
 
     return (True, None) if verif else (False, 'Invalid password')
 
-def get_actual_voting_for_all_user():
-    db = d.get_db()
-    cur = db.execute('select * from votings where date=?', 
-        [h.get_current_time_in_s()])
-    entries = cur.fetchall()
-    return entries
-
 def get_actual_voting_for_logged_user():
     db = d.get_db()
     cur = db.execute('select * from votings where date=? and user=?', 
@@ -206,7 +199,7 @@ def detail():
         abort(401)
 
     error = None
-    votings = get_actual_voting_for_all_user()
+    votings = dal.get_actual_voting_for_all_user()
     detail_items = {}
     for v in votings:
         detail_items.setdefault(v['pub'], []).append((v['user'], v['rating']))
