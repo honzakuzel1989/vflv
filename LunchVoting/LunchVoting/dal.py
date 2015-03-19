@@ -34,3 +34,9 @@ def get_actual_sum(pub_id):
         [h.get_current_time_in_s(), pub_id])
     psum = cur.fetchall()[0]['psum']
     return psum if psum else 0
+    
+def update_password(user, new_pass):
+    db = d.get_db()
+    cur = db.execute('update users set pass=? where name=?', 
+        [h.compute_hash_in_hex(new_pass), user])
+    db.commit()

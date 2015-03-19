@@ -34,12 +34,6 @@ def check_auth(username, password):
 
     return (True, None) if verif else (False, 'Invalid password')
 
-def __update_password(new_pass):
-    db = d.get_db()
-    cur = db.execute('update users set pass=? where name=?', 
-        [h.compute_hash_in_hex(new_pass), __get_logged_user()])
-    db.commit()
-
 def __delete_voting():
     db = d.get_db()
     db.execute('delete from votings where date=? and user=?', 
@@ -138,7 +132,7 @@ def passwd():
             new_pass = request.form['newpassword']
             retval, error = __v.verify_password(new_pass)
             if retval:
-                __update_password(new_pass)
+                dal.update_password(__get_logged_user(), new_pass)
                 flash('You password was changed')
                 return redirect(url_for('voting'))
     # GET
