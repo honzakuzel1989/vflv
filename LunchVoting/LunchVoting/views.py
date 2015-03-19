@@ -5,6 +5,7 @@ Routes and views for the flask application.
 import os
 import re
 import helpers as h
+import database as d
 import verificators as v
 
 from LunchVoting import app
@@ -16,28 +17,13 @@ from flask import Flask, request, session, redirect, \
 def __get_logged_user():
     return session.get('logged_user')
 
-def connect_db():
-    """Connects to the specific database."""
-    rv = sqlite3.connect(app.config['DATABASE'])
-    rv.row_factory = sqlite3.Row
-    return rv
-
-def get_db():
-    """Opens a new database connection if there is none yet for the current application context."""
-    if not hasattr(g, 'sqlite_db'):
-        g.sqlite_db = connect_db()
-    return g.sqlite_db
-
-def init_db():
-    """Initializes the database."""
-    db = get_db()
-    with app.open_resource('sql/vflv.sql', mode='r') as f:
-        db.cursor().executescript(f.read())
-    db.commit()
+#
+# Databaze
+#
 
 def check_auth(username, password):
     """Check authorization"""
-    db = get_db()
+    db = d.get_db()
     cur = db.execute('select pass from users where name=?', [username])
     entries = cur.fetchall()
 
@@ -50,47 +36,47 @@ def check_auth(username, password):
     return (True, None) if verif else (False, 'Invalid password')
 
 def get_pubs():
-    db = get_db()
+    db = d.get_db()
     cur = db.execute('select * from pubs')
     entries = cur.fetchall()
     return entries
 
 def get_actual_voting_for_all_user():
-    db = get_db()
+    db = d.get_db()
     cur = db.execute('select * from votings where date=?    ', 
         [h.get_current_time_in_s()])
     entries = cur.fetchall()
     return entries
 
 def get_actual_voting_for_logged_user():
-    db = get_db()
+    db = d.get_db()
     cur = db.execute('select * from votings where date=? and user=?', 
         [h.get_current_time_in_s(), __get_logged_user()])
     entries = cur.fetchall()
     return entries
     
 def get_actual_sum(pub_id):
-    db = get_db()
+    db = d.get_db()
     cur = db.execute('select sum(rating) as psum from votings where date=? and pub=?', 
         [h.get_current_time_in_s(), pub_id])
     psum = cur.fetchall()[0]['psum']
     return psum if psum else 0
 
 def __update_password(new_pass):
-    db = get_db()
+    db = d.get_db()
     cur = db.execute('update users set pass=? where name=?', 
         [h.compute_hash_in_hex(new_pass), __get_logged_user()])
     db.commit()
 
 def __delete_voting():
-    db = get_db()
+    db = d.get_db()
     db.execute('delete from votings where date=? and user=?', 
         [h.get_current_time_in_s(), __get_logged_user()])
     db.commit()
     flash('Old voting was successfully inserted')
 
 def __insert_voting(pub_id, rating):
-    db = get_db()
+    db = d.get_db()
     cur = db.execute('select * from pubs where id = ?', [pub_id])
     pubs = cur.fetchall()
 
@@ -133,7 +119,7 @@ def vote(day_voting, form_voting_items):
 @app.cli.command('initdb')
 def initdb_command():
     """Creates the database tables."""
-    init_db()
+    db.init_db()
     print('Initialized the database.')
 
 @app.teardown_appcontext
