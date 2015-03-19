@@ -20,3 +20,10 @@ def get_actual_voting_for_all_user():
         [h.get_current_time_in_s()])
     entries = cur.fetchall()
     return entries
+    
+def get_actual_voting_for_user(user):
+    db = d.get_db()
+    cur = db.execute('select * from votings where date=? and user=?', 
+        [h.get_current_time_in_s(), user])
+    entries = cur.fetchall()
+    return entries
