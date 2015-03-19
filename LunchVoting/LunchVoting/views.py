@@ -4,23 +4,13 @@ Routes and views for the flask application.
 
 import os
 import re
+import helpers as h
 
-from hashlib import sha256 as sha
 from sqlite3 import dbapi2 as sqlite3
 from datetime import datetime
-from flask import Flask, request, session, redirect, url_for, abort, render_template, flash, g
+from flask import Flask, request, session, redirect, \
+    url_for, abort, render_template, flash, g
 from LunchVoting import app
-
-def __compute_hash_in_hex(password):
-    hash_object = sha(password)
-    hex_dig = hash_object.hexdigest()
-    return hex_dig
-
-@app.cli.command('initdb')
-def initdb_command():
-    """Creates the database tables."""
-    init_db()
-    print('Initialized the database.')
 
 def connect_db():
     """Connects to the specific database."""
@@ -60,7 +50,7 @@ def check_auth(username, password):
         return (False, 'Invalid username')
 
     pass_h = entries[0]['pass']
-    verif = pass_h == __compute_hash_in_hex(password)
+    verif = pass_h == h.compute_hash_in_hex(password)
 
     return (True, None) if verif else (False, 'Invalid password')
 
@@ -94,7 +84,7 @@ def get_actual_sum(pub_id):
 def __update_password(new_pass):
     db = get_db()
     cur = db.execute('update users set pass=? where name=?', 
-        [__compute_hash_in_hex(new_pass), __get_logged_user()])
+        [h.compute_hash_in_hex(new_pass), __get_logged_user()])
     db.commit()
 
 def __verify_password(password):
@@ -168,7 +158,6 @@ def vote(day_voting, form_voting_items):
     if not retval:
         return (False, error)
 
-    # formular spravne vyplnen - rozdeleni zda uz dnes hlasoval
     if day_voting:
         __delete_voting()
         
@@ -178,11 +167,25 @@ def vote(day_voting, form_voting_items):
 
     return (True, None)
 
+#
+# App metody
+#
+
+@app.cli.command('initdb')
+def initdb_command():
+    """Creates the database tables."""
+    init_db()
+    print('Initialized the database.')
+
 @app.teardown_appcontext
 def close_db(error):
     """Closes the database again at the end of the request."""
     if hasattr(g, 'sqlite_db'):
         g.sqlite_db.close()
+
+#
+# Routovani html stranek
+#
 
 @app.route('/')
 @app.route('/login', methods=['GET', 'POST'])
