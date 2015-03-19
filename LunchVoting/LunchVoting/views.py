@@ -188,6 +188,9 @@ def login():
             flash('You were logged in')
             return redirect(url_for('voting'))
     # GET
+    if __get_logged_user():
+        return redirect(url_for('voting'))
+
     return render_template(
         'login.html',
         title='Login',
