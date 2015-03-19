@@ -5,6 +5,7 @@ Routes and views for the flask application.
 import os
 import re
 import helpers as h
+import verificators as v
 
 from sqlite3 import dbapi2 as sqlite3
 from datetime import datetime
@@ -87,42 +88,6 @@ def __update_password(new_pass):
         [h.compute_hash_in_hex(new_pass), __get_logged_user()])
     db.commit()
 
-def __verify_password(password):
-    # delka alespon 4
-    # alespon jedno cislo
-    # alespon jedno pismeno
-    if len(password) < 4:
-        return (False, 'Invalid len of new password (min=4)')
-    if not re.search('[a-zA-Z]', password):
-        return (False, 'Invalid new password (must contain a letter [a-zA-Z])')
-    if not re.search('[0-9]', password):
-        return (False, 'Invalid new password (must contain a number [0-9])')
-    return (True, None)
-
-def __verify_voting_values(form_voting_items):
-    # max 3 hlasovani
-    # min hodnota 1
-    # max hodnota 3
-    # zadne stejne hodnoty
-    cnt = 0
-    ivals = []
-    for (_, val) in form_voting_items:
-        if val:
-            cnt += 1
-            ival = 0
-            
-            try:
-                ival = int(val)
-            except ValueError:
-                return (False, 'Invalid input of voting (values=1,2,3,4)')
-            if not 0 < ival < 4:
-                return (False, 'Invalid value of voting (min=1, max=3)')
-            if ival in ivals:
-                return (False, 'Invalid value of voting (values must be unique)')
-            ivals.append(ival)
-    retval = 0 < cnt < 4
-    return (True, None) if 0 < cnt < 4 else (False, 'Invalid number of votings (min=1, max=3)')
-
 def __delete_voting():
     db = get_db()
     db.execute('delete from votings where date=? and user=?', 
@@ -154,7 +119,7 @@ def __get_pubs_items(pubs, day_votings, day_sums):
     return pubs_items
 
 def vote(day_voting, form_voting_items):
-    retval, error = __verify_voting_values(form_voting_items)
+    retval, error = v.verify_voting_values(form_voting_items)
     if not retval:
         return (False, error)
 
@@ -219,7 +184,7 @@ def passwd():
         retval, error = check_auth(__get_logged_user(), request.form['oldpassword'])
         if retval:
             new_pass = request.form['newpassword']
-            retval, error = __verify_password(new_pass)
+            retval, error = __v.verify_password(new_pass)
             if retval:
                 __update_password(new_pass)
                 flash('You password was changed')
