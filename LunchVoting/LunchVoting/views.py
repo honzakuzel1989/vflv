@@ -8,6 +8,7 @@ import dal
 import helpers as h
 import database as d
 import verificators as v
+import presenters as p
 
 from LunchVoting import app
 from datetime import datetime
@@ -15,51 +16,12 @@ from sqlite3 import dbapi2 as sqlite3
 from flask import Flask, request, session, redirect, \
     url_for, abort, render_template, flash, g
 
+#
+# Privatni metody
+#
+
 def __get_logged_user():
     return session.get('logged_user')
-
-#
-# Databaze
-#
-
-def check_auth(username, password):
-    """Check authorization"""
-    entries = dal.get_user_by_username(username)
-
-    if len(entries) != 1:
-        return (False, 'Invalid username')
-
-    pass_h = entries[0]['pass']
-    verif = pass_h == h.compute_hash_in_hex(password)
-
-    return (True, None) if verif else (False, 'Invalid password')
-
-def get_pubs_items(pubs, day_votings, day_sums):
-    pubs_items = []
-    for p in pubs:
-        has_voting = False
-        for dv in day_votings:
-            if p['title'] == dv['pub']:
-                pubs_items.append((p, dv, day_sums[p['id']]))
-                has_voting = True
-                break
-        if not has_voting:
-            pubs_items.append((p, None, day_sums[p['id']]))
-    return pubs_items
-
-def vote(day_voting, form_voting_items):
-    retval, error = v.verify_voting_values(form_voting_items)
-    if not retval:
-        return (False, error)
-
-    if day_voting:
-        dal.delete_actual_voting(__get_logged_user())
-        
-    for (pub_id, rating) in form_voting_items:
-        if rating:
-            dal.insert_voting(__get_logged_user, pub_id, int(rating))
-
-    return (True, None)
 
 #
 # App metody
@@ -86,7 +48,7 @@ def close_db(error):
 def login():
     error = None
     if request.method == 'POST':
-        retval, error = check_auth(request.form['username'], request.form['password'])
+        retval, error = p.check_auth(request.form['username'], request.form['password'])
         if retval:
             session['logged_user'] = request.form['username']
             flash('You were logged in')
@@ -110,7 +72,7 @@ def passwd():
     error = None
     if request.method == 'POST':
         pass
-        retval, error = check_auth(__get_logged_user(), request.form['oldpassword'])
+        retval, error = p.check_auth(__get_logged_user(), request.form['oldpassword'])
         if retval:
             new_pass = request.form['newpassword']
             retval, error = __v.verify_password(new_pass)
@@ -134,15 +96,15 @@ def voting():
     error = None
     pubs = dal.get_pubs()
     day_votings = dal.get_actual_voting_for_user(__get_logged_user())
-    day_sums = {p['id']: dal.get_actual_sum(p['title']) for p in pubs}
-    pubs_items = get_pubs_items(pubs, day_votings, day_sums)
+    day_sums = {pub['id']: dal.get_actual_sum(pub['title']) for pub in pubs}
+    pubs_items = p.get_pubs_items(pubs, day_votings, day_sums)
 
     if request.method == 'POST':
         pass
 
-        form_voting_items = [(p['id'], request.form[str(p['id'])]) for p in pubs]
+        form_voting_items = [(pub['id'], request.form[str(pub['id'])]) for pub in pubs]
                     
-        retval, error = vote(day_votings, form_voting_items)
+        retval, error = p.vote(day_votings, form_voting_items)
         if retval:
             flash('You voted')
             return redirect(url_for('voting'))
