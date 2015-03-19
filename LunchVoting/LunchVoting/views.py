@@ -34,23 +34,6 @@ def check_auth(username, password):
 
     return (True, None) if verif else (False, 'Invalid password')
 
-def __delete_voting():
-    db = d.get_db()
-    db.execute('delete from votings where date=? and user=?', 
-        [h.get_current_time_in_s(), __get_logged_user()])
-    db.commit()
-    flash('Old voting was successfully inserted')
-
-def __insert_voting(pub_id, rating):
-    db = d.get_db()
-    cur = db.execute('select * from pubs where id = ?', [pub_id])
-    pubs = cur.fetchall()
-
-    db.execute('insert into votings (date, user, pub, rating) values (?, ?, ?, ?)', 
-        [h.get_current_time_in_s(), __get_logged_user(), pubs[0]['title'], rating])
-    db.commit()
-    flash('New voting was successfully inserted')
-
 def get_pubs_items(pubs, day_votings, day_sums):
     pubs_items = []
     for p in pubs:
@@ -70,11 +53,11 @@ def vote(day_voting, form_voting_items):
         return (False, error)
 
     if day_voting:
-        __delete_voting()
+        dal.delete_actual_voting(__get_logged_user())
         
     for (pub_id, rating) in form_voting_items:
         if rating:
-            __insert_voting(pub_id, int(rating))
+            dal.insert_voting(__get_logged_user, pub_id, int(rating))
 
     return (True, None)
 

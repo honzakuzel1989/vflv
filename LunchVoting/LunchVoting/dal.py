@@ -40,3 +40,20 @@ def update_password(user, new_pass):
     cur = db.execute('update users set pass=? where name=?', 
         [h.compute_hash_in_hex(new_pass), user])
     db.commit()
+    
+def delete_actual_voting(user):
+    db = d.get_db()
+    db.execute('delete from votings where date=? and user=?', 
+        [h.get_current_time_in_s(), user])
+    db.commit()
+    flash('Old voting was successfully inserted')
+
+def insert_voting(user, pub_id, rating):
+    db = d.get_db()
+    cur = db.execute('select * from pubs where id = ?', [pub_id])
+    pubs = cur.fetchall()
+
+    db.execute('insert into votings (date, user, pub, rating) values (?, ?, ?, ?)', 
+        [h.get_current_time_in_s(), user, pubs[0]['title'], rating])
+    db.commit()
+    flash('New voting was successfully inserted')
