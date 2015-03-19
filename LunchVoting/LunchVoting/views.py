@@ -203,7 +203,7 @@ def passwd():
     error = None
     if request.method == 'POST':
         pass
-        retval, error = check_auth(request.form['username'], request.form['oldpassword'])
+        retval, error = check_auth(__get_logged_user(), request.form['oldpassword'])
         if retval:
             new_pass = request.form['newpassword']
             retval, error = __verify_password(new_pass)

@@ -4,11 +4,9 @@
 
 <form action="{{ url_for('passwd') }}" method="post">
     <dl>
-        <dt>Username:
-        <dd><input type="text" name="username">
-        <dt>Old Password:
+        <dt>Old:
         <dd><input type="password" name="oldpassword">
-        <dt>New Password:
+        <dt>New:
         <dd><input type="password" name="newpassword">
     </dl>
     <input type="submit" value="Change">
