@@ -23,7 +23,9 @@
             <div class="navbar-collapse collapse">
                 <ul class="nav navbar-nav">
                     {% if logged_user %}
-                    <li><a href="{{ url_for('logout') }}">Logout {{ logged_user }}</a></li>
+                    <li><a href="{{ url_for('voting') }}">Voting</a></li>
+                    <li><a href="{{ url_for('passwd') }}">Change_pass</a></li>
+                    <li><a href="{{ url_for('logout') }}">Logout</a></li>
                     {% endif %}
                 </ul>
             </div>

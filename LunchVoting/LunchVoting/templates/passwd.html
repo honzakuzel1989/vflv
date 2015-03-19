@@ -1,0 +1,17 @@
+﻿{% extends "layout.html" %}
+
+{% block content %}
+
+<form action="{{ url_for('passwd') }}" method="post">
+    <dl>
+        <dt>Username:
+        <dd><input type="text" name="username">
+        <dt>Old Password:
+        <dd><input type="password" name="oldpassword">
+        <dt>New Password:
+        <dd><input type="password" name="newpassword">
+    </dl>
+    <input type="submit" value="Change">
+</form>
+
+{% endblock %}

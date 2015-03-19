@@ -47,6 +47,7 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="LunchVoting\sql\vflv.sql" />
+    <Content Include="LunchVoting\templates\passwd.html" />
     <Content Include="LunchVoting\templates\voting.html" />
     <Content Include="LunchVoting\templates\login.html" />
     <Content Include="requirements.txt" />

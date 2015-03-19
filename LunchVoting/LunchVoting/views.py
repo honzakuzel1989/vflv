@@ -160,7 +160,25 @@ def login():
         'login.html',
         title='Login',
         year=datetime.now().year,
-        _user=__get_logged_user(),
+        logged_user=__get_logged_user(),
+        error=error)
+
+@app.route('/passwd', methods=['GET', 'POST'])
+def passwd():
+    error = None
+    if request.method == 'POST':
+        pass
+        #retval, error = check_auth(request.form['username'], request.form['password'])
+        #if retval:
+        #    session['logged_user'] = request.form['username']
+        #    flash('You were logged in')
+        #    return redirect(url_for('voting'))
+    # GET
+    return render_template(
+        'passwd.html',
+        title='Change Password',
+        year=datetime.now().year,
+        logged_user=__get_logged_user(),
         error=error)
 
 def __get_pubs_items(pubs, day_votings, day_sums):
