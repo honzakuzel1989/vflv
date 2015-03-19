@@ -7,11 +7,14 @@ import re
 import helpers as h
 import verificators as v
 
-from sqlite3 import dbapi2 as sqlite3
+from LunchVoting import app
 from datetime import datetime
+from sqlite3 import dbapi2 as sqlite3
 from flask import Flask, request, session, redirect, \
     url_for, abort, render_template, flash, g
-from LunchVoting import app
+
+def __get_logged_user():
+    return session.get('logged_user')
 
 def connect_db():
     """Connects to the specific database."""
@@ -24,15 +27,6 @@ def get_db():
     if not hasattr(g, 'sqlite_db'):
         g.sqlite_db = connect_db()
     return g.sqlite_db
-
-def __get_logged_user():
-    return session.get('logged_user')
-
-def __get_current_time_in_s():
-    dt_now = datetime.now()
-    dt_now_trunc = dt_now.replace(hour=0, minute=0, second=0, microsecond=0)
-    dt_now_in_s = int((dt_now_trunc - datetime(1970,1,1)).total_seconds())
-    return dt_now_in_s
 
 def init_db():
     """Initializes the database."""
@@ -64,21 +58,21 @@ def get_pubs():
 def get_actual_voting_for_all_user():
     db = get_db()
     cur = db.execute('select * from votings where date=?    ', 
-        [__get_current_time_in_s()])
+        [h.get_current_time_in_s()])
     entries = cur.fetchall()
     return entries
 
 def get_actual_voting_for_logged_user():
     db = get_db()
     cur = db.execute('select * from votings where date=? and user=?', 
-        [__get_current_time_in_s(), __get_logged_user()])
+        [h.get_current_time_in_s(), __get_logged_user()])
     entries = cur.fetchall()
     return entries
     
 def get_actual_sum(pub_id):
     db = get_db()
     cur = db.execute('select sum(rating) as psum from votings where date=? and pub=?', 
-        [__get_current_time_in_s(), pub_id])
+        [h.get_current_time_in_s(), pub_id])
     psum = cur.fetchall()[0]['psum']
     return psum if psum else 0
 
@@ -91,7 +85,7 @@ def __update_password(new_pass):
 def __delete_voting():
     db = get_db()
     db.execute('delete from votings where date=? and user=?', 
-        [__get_current_time_in_s(), __get_logged_user()])
+        [h.get_current_time_in_s(), __get_logged_user()])
     db.commit()
     flash('Old voting was successfully inserted')
 
@@ -101,7 +95,7 @@ def __insert_voting(pub_id, rating):
     pubs = cur.fetchall()
 
     db.execute('insert into votings (date, user, pub, rating) values (?, ?, ?, ?)', 
-        [__get_current_time_in_s(), __get_logged_user(), pubs[0]['title'], rating])
+        [h.get_current_time_in_s(), __get_logged_user(), pubs[0]['title'], rating])
     db.commit()
     flash('New voting was successfully inserted')
 

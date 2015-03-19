@@ -1,3 +1,6 @@
+"""
+Verificators
+"""
 
 def verify_password(password):
     # delka alespon 4
