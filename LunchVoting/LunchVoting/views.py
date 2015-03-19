@@ -70,7 +70,14 @@ def get_pubs():
     entries = cur.fetchall()
     return entries
 
-def get_actual_voting():
+def get_actual_voting_for_all_user():
+    db = get_db()
+    cur = db.execute('select * from votings where date=?    ', 
+        [__get_current_time_in_s()])
+    entries = cur.fetchall()
+    return entries
+
+def get_actual_voting_for_logged_user():
     db = get_db()
     cur = db.execute('select * from votings where date=? and user=?', 
         [__get_current_time_in_s(), __get_logged_user()])
@@ -229,7 +236,7 @@ def voting():
 
     error = None
     pubs = get_pubs()
-    day_votings = get_actual_voting()
+    day_votings = get_actual_voting_for_logged_user()
     day_sums = {p['id']: get_actual_sum(p['title']) for p in pubs}
     pubs_items = __get_pubs_items(pubs, day_votings, day_sums)
 
@@ -249,6 +256,28 @@ def voting():
              year=datetime.now().year,
              logged_user=__get_logged_user(),
              pubs_items=pubs_items,
+             error=error
+            )
+
+@app.route('/detail')
+def detail():
+    if not __get_logged_user():
+        abort(401)
+
+    error = None
+    votings = get_actual_voting_for_all_user()
+    detail_items = {}
+    for v in votings:
+        detail_items.setdefault(v['pub'], []).append((v['user'], v['rating']))
+    detail_items = sorted(detail_items.items())
+
+    # GET
+    return render_template(
+             'detail.html',
+             title='Voting Detail',
+             year=datetime.now().year,
+             logged_user=__get_logged_user(),
+             detail_items=detail_items,
              error=error
             )
 

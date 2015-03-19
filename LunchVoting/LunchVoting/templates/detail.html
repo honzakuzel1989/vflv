@@ -1,0 +1,18 @@
+{% extends "layout.html" %}
+
+{% block content %}
+
+<form action="{{ url_for('detail') }}" method="post">
+    <dl>
+        {% for (k, v) in detail_items %}
+            <dt>{{ k }}</dt>
+            {% for (user, rating) in v %}
+            <dd><input type="text" value="{{ user }} {{ rating }}"></dd>
+            {% endfor %}
+        {% else %}
+        Non voting for today.
+        {% endfor %}
+</dl>
+</form>
+
+{% endblock %}
