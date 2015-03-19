@@ -3,6 +3,7 @@ Routes and views for the flask application.
 """
 
 import os
+import re
 
 from hashlib import sha256 as sha
 from sqlite3 import dbapi2 as sqlite3
@@ -83,6 +84,24 @@ def get_actual_sum(pub_id):
     psum = cur.fetchall()[0]['psum']
     return psum if psum else 0
 
+def __update_password(new_pass):
+    db = get_db()
+    cur = db.execute('update users set pass=? where name=?', 
+        [__compute_hash_in_hex(new_pass), __get_logged_user()])
+    db.commit()
+
+def __verify_password(password):
+    # delka alespon 4
+    # alespon jedno cislo
+    # alespon jedno pismeno
+    if len(password) < 4:
+        return (False, 'Invalid len of new password (min=4)')
+    if not re.search('[a-zA-Z]', password):
+        return (False, 'Invalid new password (must contain a letter [a-zA-Z])')
+    if not re.search('[0-9]', password):
+        return (False, 'Invalid new password (must contain a number [0-9])')
+    return (True, None)
+
 def __verify_voting_values(form_voting_items):
     # max 3 hlasovani
     # min hodnota 1
@@ -123,6 +142,19 @@ def __insert_voting(pub_id, rating):
         [__get_current_time_in_s(), __get_logged_user(), pubs[0]['title'], rating])
     db.commit()
     flash('New voting was successfully inserted')
+
+def __get_pubs_items(pubs, day_votings, day_sums):
+    pubs_items = []
+    for p in pubs:
+        has_voting = False
+        for dv in day_votings:
+            if p['title'] == dv['pub']:
+                pubs_items.append((p, dv, day_sums[p['id']]))
+                has_voting = True
+                break
+        if not has_voting:
+            pubs_items.append((p, None, day_sums[p['id']]))
+    return pubs_items
 
 def vote(day_voting, form_voting_items):
     retval, error = __verify_voting_values(form_voting_items)
@@ -165,14 +197,20 @@ def login():
 
 @app.route('/passwd', methods=['GET', 'POST'])
 def passwd():
+    if not __get_logged_user():
+        abort(401)
+
     error = None
     if request.method == 'POST':
         pass
-        #retval, error = check_auth(request.form['username'], request.form['password'])
-        #if retval:
-        #    session['logged_user'] = request.form['username']
-        #    flash('You were logged in')
-        #    return redirect(url_for('voting'))
+        retval, error = check_auth(request.form['username'], request.form['oldpassword'])
+        if retval:
+            new_pass = request.form['newpassword']
+            retval, error = __verify_password(new_pass)
+            if retval:
+                __update_password(new_pass)
+                flash('You password was changed')
+                return redirect(url_for('voting'))
     # GET
     return render_template(
         'passwd.html',
@@ -181,22 +219,9 @@ def passwd():
         logged_user=__get_logged_user(),
         error=error)
 
-def __get_pubs_items(pubs, day_votings, day_sums):
-    pubs_items = []
-    for p in pubs:
-        has_voting = False
-        for dv in day_votings:
-            if p['title'] == dv['pub']:
-                pubs_items.append((p, dv, day_sums[p['id']]))
-                has_voting = True
-                break
-        if not has_voting:
-            pubs_items.append((p, None, day_sums[p['id']]))
-    return pubs_items
-
 @app.route('/voting', methods=['GET', 'POST'])
 def voting():
-    if not session.get('logged_user'):
+    if not __get_logged_user():
         abort(401)
 
     error = None
