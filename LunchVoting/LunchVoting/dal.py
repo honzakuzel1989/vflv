@@ -1,3 +1,6 @@
+"""
+DAL
+"""
 
 import database as d
 import helpers as h
