@@ -6,13 +6,10 @@ import os
 import re
 import dal
 import helpers as h
-import database as d
 import verificators as v
 import presenters as p
 
 from LunchVoting import app
-from datetime import datetime
-from sqlite3 import dbapi2 as sqlite3
 from flask import Flask, request, session, redirect, \
     url_for, abort, render_template, flash, g
 
@@ -60,7 +57,7 @@ def login():
     return render_template(
         'login.html',
         title='Login',
-        year=datetime.now().year,
+        year=h.get_current_year(),
         logged_user=__get_logged_user(),
         error=error)
 
@@ -75,7 +72,7 @@ def passwd():
         retval, error = p.check_auth(__get_logged_user(), request.form['oldpassword'])
         if retval:
             new_pass = request.form['newpassword']
-            retval, error = __v.verify_password(new_pass)
+            retval, error = v.verify_password(new_pass)
             if retval:
                 dal.update_password(__get_logged_user(), new_pass)
                 flash('You password was changed')
@@ -84,7 +81,7 @@ def passwd():
     return render_template(
         'passwd.html',
         title='Change Password',
-        year=datetime.now().year,
+        year=h.get_current_year(),
         logged_user=__get_logged_user(),
         error=error)
 
@@ -112,7 +109,7 @@ def voting():
     return render_template(
              'voting.html',
              title='Voting',
-             year=datetime.now().year,
+             year=h.get_current_year(),
              logged_user=__get_logged_user(),
              pubs_items=pubs_items,
              error=error
@@ -134,7 +131,7 @@ def detail():
     return render_template(
              'detail.html',
              title='Voting Detail',
-             year=datetime.now().year,
+             year=h.get_current_year(),
              logged_user=__get_logged_user(),
              detail_items=detail_items,
              error=error
