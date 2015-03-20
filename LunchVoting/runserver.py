@@ -7,13 +7,14 @@ import os
 from LunchVoting import app
 
 if __name__ == '__main__':
-    app.config.update(dict(
-        DATABASE=os.path.join(app.root_path, 'vflv.db'),
-    ))
-
-    HOST = os.environ.get('SERVER_HOST', 'localhost')
+    DEBUG = int(os.environ.get('DEBUG', '0'))
     PORT = int(os.environ.get('SERVER_PORT', '5555'))
 
-    app.run(host=HOST, port=PORT, debug=True)
+    if DEBUG:
+        app.debug = True
+        HOST = os.environ.get('SERVER_HOST', 'localhost')
+    else:
+        HOST = '0.0.0.0'
+
+    app.run(host=HOST, port=PORT)
     print('Started the server.')
-    

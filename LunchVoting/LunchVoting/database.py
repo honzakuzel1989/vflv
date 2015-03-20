@@ -2,13 +2,14 @@
 Database.
 """
 
+import os
 from flask import g
 from sqlite3 import dbapi2 as sqlite3
 from LunchVoting import app
 
 def __connect_db():
     """Connects to the specific database."""
-    rv = sqlite3.connect(app.config['DATABASE'])
+    rv = sqlite3.connect(os.path.join(app.root_path, 'vflv.db'))
     rv.row_factory = sqlite3.Row
     return rv
     
