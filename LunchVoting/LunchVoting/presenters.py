@@ -44,4 +44,3 @@ def vote(user, day_voting, form_voting_items):
             dal.insert_voting(user, pub_id, int(rating))
 
     return (True, None)
-    

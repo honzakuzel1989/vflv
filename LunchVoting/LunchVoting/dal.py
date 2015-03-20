@@ -58,4 +58,3 @@ def insert_voting(user, pub_id, rating):
     db.execute('insert into votings (date, user, pub, rating) values (?, ?, ?, ?)', 
         [h.get_current_time_in_s(), user, pubs[0]['title'], rating])
     db.commit()
-    
