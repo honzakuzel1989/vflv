@@ -32,14 +32,14 @@ def get_pubs_items(pubs, day_votings, day_sums):
     return pubs_items
 
 def vote(user, day_voting, form_voting_items):
-    retval, error = v.verify_voting_values(form_voting_items)
+    retval, error = v.verify_voting_values(form_voting_items.values())
     if not retval:
         return (False, error)
 
     if day_voting:
         dal.delete_actual_voting(user)
         
-    for (pub_id, rating) in form_voting_items:
+    for (pub_id, rating) in form_voting_items.items():
         if rating:
             dal.insert_voting(user, pub_id, int(rating))
 

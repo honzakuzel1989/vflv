@@ -99,7 +99,7 @@ def voting():
     if request.method == 'POST':
         pass
 
-        form_voting_items = [(pub['id'], request.form[str(pub['id'])]) for pub in pubs]
+        form_voting_items = {pub['id']:request.form[str(pub['id'])] for pub in pubs}
                     
         retval, error = p.vote(__get_logged_user(), day_votings, form_voting_items)
         if retval:

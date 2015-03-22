@@ -23,7 +23,7 @@ def verify_voting_values(form_voting_items):
     # zadne stejne hodnoty
     cnt = 0
     ivals = []
-    for (_, val) in form_voting_items:
+    for val in form_voting_items:
         if val:
             cnt += 1
             ival = 0
