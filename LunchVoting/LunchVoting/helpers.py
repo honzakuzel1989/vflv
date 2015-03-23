@@ -16,7 +16,7 @@ def get_time_in_s(dt=datetime.now()):
     return dt_in_s
 
 def get_current_time_in_s():
-    dt_now_in_s = __get_time_in_s()
+    dt_now_in_s = get_time_in_s()
     return dt_now_in_s
 
 def get_current_year():
