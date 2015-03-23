@@ -8,6 +8,7 @@ import dal
 import helpers as h
 import verificators as v
 import presenters as p
+import database as db
 
 from LunchVoting import app
 from flask import Flask, request, session, redirect, \
@@ -23,12 +24,6 @@ def __get_logged_user():
 #
 # App metody
 #
-
-@app.cli.command('initdb')
-def initdb_command():
-    """Creates the database tables."""
-    db.init_db()
-    print('Initialized the database.')
 
 @app.teardown_appcontext
 def close_db(error):
