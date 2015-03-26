@@ -30,10 +30,6 @@ class VerificatorsTest(unittest.TestCase):
         self.assertEqual(ret, True)
 
     def test_verify_bad_voting_values(self):
-        # min 1 hodnoty
-        ret, _ = x.verify_voting_values([])
-        self.assertEqual(ret, False)
-        
         # max 3 hodnoty
         ret, _ = x.verify_voting_values([1,1,1,1,1,1])
         self.assertEqual(ret, False)
@@ -54,6 +50,10 @@ class VerificatorsTest(unittest.TestCase):
         self.assertEqual(ret, False)
 
     def test_verify_good_voting_values(self):
+        # min 0 hodnot
+        ret, _ = x.verify_voting_values([])
+        self.assertEqual(ret, True)
+        
         ret, _ = x.verify_voting_values([1, 2, 3])
         self.assertEqual(ret, True)
         
