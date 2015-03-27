@@ -26,6 +26,9 @@ class HelpersTest(unittest.TestCase):
         self.assertEqual(x.get_time_in_s(datetime(1999,9,9)), 936835200)
         self.assertEqual(x.get_time_in_s(datetime(2050,5,5)), 2535321600)
         self.assertEqual(x.get_time_in_s(datetime(2015,7,17)) - x.get_time_in_s(datetime(2015,7,16)), 60*60*24)
+        self.assertEqual(x.get_time_in_s(datetime(2015,4,12)) - x.get_time_in_s(datetime(2015,4,15)), -60*60*24*3)
+        self.assertEqual(x.get_time_in_s(datetime(2050,5,5,17,55,24,124)), 2535321600)
+        self.assertEqual(x.get_time_in_s(datetime(2050,5,5,7,5,4,140)), 2535321600)
 
 if __name__ == '__main__':
     unittest.main()
