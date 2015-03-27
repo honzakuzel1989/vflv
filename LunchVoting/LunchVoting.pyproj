@@ -37,6 +37,7 @@
     <Compile Include="LunchVoting\helpers.py" />
     <Compile Include="LunchVoting\presenters.py" />
     <Compile Include="LunchVoting\test_helpers.py" />
+    <Compile Include="LunchVoting\test_verificators.py" />
     <Compile Include="LunchVoting\verificators.py" />
     <Compile Include="runserver.py" />
     <Compile Include="LunchVoting\__init__.py" />
