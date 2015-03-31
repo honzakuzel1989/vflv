@@ -18,7 +18,7 @@ def get_db():
     """Opens a new database connection if there is none yet for the current application context."""
     if not hasattr(g, 'sqlite_db'):
         g.sqlite_db = __connect_db()
-        if not os.path.getsize('vflv.db'):
+        if not os.path.getsize(app.config['DATABASE']):
             __init_db(g.sqlite_db)
     return g.sqlite_db
     
