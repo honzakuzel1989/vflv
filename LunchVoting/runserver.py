@@ -18,6 +18,6 @@ if __name__ == '__main__':
             '\xed\x8ege\xea}\x03\xc0\x8c$$\x98\xa4N\xa8\xb6\xf0k\x8a\x86\xe4\xa9\x19\xb7\x8a$')
         ))
     app.config.from_envvar('VFLV_SETTINGS', silent=True)
-
+    print(app.config)
     print(' * Starting the server')
-    app.run()
+    app.run(host=app.config['HOST'], port=app.config['PORT'])
