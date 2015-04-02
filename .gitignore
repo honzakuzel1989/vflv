@@ -60,3 +60,11 @@ target/
 *.suo
 bin
 obj
+
+# stdio
+IN
+OUT
+ERR
+
+# Python environment
+venv
