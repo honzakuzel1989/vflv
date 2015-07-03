@@ -31,11 +31,10 @@ def verify_voting_values(form_voting_items):
             try:
                 ival = int(val)
             except ValueError:
-                return (False, 'Invalid input of voting (values=1,2,3,4)')
+                return (False, 'Invalid input of voting (values=1,2,3)')
             if not 0 < ival < 4:
                 return (False, 'Invalid value of voting (min=1, max=3)')
             if ival in ivals:
                 return (False, 'Invalid value of voting (values must be unique)')
             ivals.append(ival)
-    retval = 0 < cnt < 4
     return (True, None) if 0 <= cnt < 4 else (False, 'Invalid number of votings (min=0, max=3)')
