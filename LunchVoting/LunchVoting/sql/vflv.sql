@@ -15,6 +15,7 @@ insert into users (name, pass) values ('dyc1', '37450720bfa246a4fc703953366131d4
 insert into users (name, pass) values ('flo2', 'bcf8ca6b95ddbdac2772cde94ce59c490a03954640a571da5099c39569c87f80');
 insert into users (name, pass) values ('bel1', '0cfa8c91525dc70d3d638320bdb14a14e21c9bf1b7fa563ce1d539055efae46f');
 insert into users (name, pass) values ('kre2', '23d325dd899fef4a92ce66c97416188d5e8a8119dac688b46c1efe3165076cd2');
+insert into users (name, pass) values ('cvr1', '229939f5dc0c50cd7b7f3a36d271bb55686a33d51ebc224ffdd684ed97b4ee7f');
 
 drop table if exists pubs;
 create table pubs (
@@ -30,6 +31,8 @@ insert into pubs (title) values ('Picolo');
 insert into pubs (title) values ('Sladovna');
 insert into pubs (title) values ('Sýpka');
 insert into pubs (title) values ('Zakki');
+insert into pubs (title) values ('EB');
+insert into pubs (title) values ('Hrádek');
 
 drop table if exists votings;
 create table votings (
