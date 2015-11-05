@@ -16,6 +16,7 @@ insert into users (name, pass) values ('flo2', 'bcf8ca6b95ddbdac2772cde94ce59c49
 insert into users (name, pass) values ('bel1', '0cfa8c91525dc70d3d638320bdb14a14e21c9bf1b7fa563ce1d539055efae46f');
 insert into users (name, pass) values ('kre2', '23d325dd899fef4a92ce66c97416188d5e8a8119dac688b46c1efe3165076cd2');
 insert into users (name, pass) values ('cvr1', '229939f5dc0c50cd7b7f3a36d271bb55686a33d51ebc224ffdd684ed97b4ee7f');
+insert into users (name, pass) values ('buc1', 'a1d63417b124e051cb12ad54d891755801b954f86f8043d1c4a113ea806ce724');
 
 drop table if exists pubs;
 create table pubs (
