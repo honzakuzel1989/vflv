@@ -91,6 +91,10 @@ def voting():
     day_sums = {pub['id']: dal.get_actual_sum(pub['title']) for pub in pubs}
     pubs_items = p.get_pubs_items(pubs, day_votings, day_sums)
 
+    # sort pubs_items by pubs day_sums and reverse list
+    pubs_items.sort(key=lambda tup: tup[2])
+    reversed(pubs_items)
+
     if request.method == 'POST':
         pass
 
@@ -125,7 +129,7 @@ def detail():
     # GET
     return render_template(
              'detail.html',
-             title='Voting Detail',
+             title='Voting - detail',
              year=h.get_current_year(),
              logged_user=__get_logged_user(),
              detail_items=detail_items,
