@@ -93,7 +93,7 @@ def voting():
 
     # sort pubs_items by pubs day_sums and reverse list
     pubs_items.sort(key=lambda tup: tup[2])
-    reversed(pubs_items)
+    pubs_items.reverse()
 
     if request.method == 'POST':
         pass
