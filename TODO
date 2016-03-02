@@ -1,1 +1,2 @@
 Zobrazovani flash zprav (get_flashed_messages()).
+Pridat do db (nektere tabulky, min vsak pubs) priznak zda je enable nebo disable.
