@@ -35,6 +35,8 @@ insert into pubs (title) values ('Sýpka');
 insert into pubs (title) values ('Zakki');
 insert into pubs (title) values ('EB');
 insert into pubs (title) values ('Hrádek');
+insert into pubs (title) values ('Pizzaz');
+insert into pubs (title) values ('Emanuel');
 
 drop table if exists votings;
 create table votings (
