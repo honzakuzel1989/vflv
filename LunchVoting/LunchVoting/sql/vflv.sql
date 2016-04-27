@@ -46,3 +46,12 @@ create table votings (
 	pub TEXT not null,
 	rating INTEGER not null
 );
+
+drop table if exists config;
+create table config (
+    id INTEGER primary key autoincrement,
+    name TEXT unique not null,
+    value TEXT
+);
+
+insert into config (name, value) values ('DATABASE_VERSION', '1');

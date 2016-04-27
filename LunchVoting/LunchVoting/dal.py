@@ -13,7 +13,7 @@ def get_user_by_username(username):
    
 def get_pubs():
     db = d.get_db()
-    cur = db.execute('select * from pubs')
+    cur = db.execute('select * from pubs where visible!=?', [0])
     entries = cur.fetchall()
     return entries
     

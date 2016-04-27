@@ -33,15 +33,24 @@ def __init_db(db):
 def __try_update_db(db):
     """Updates the database."""
     required_version = app.config['DATABASE_VERSION']
+    
+    # get current database version - initial = 1
+    cur = db.execute('select value from config where name=?', ['DATABASE_VERSION'])
+    current_version = int(cur.fetchone()["value"])
+
     # v1 is default (initial version) created by vflv.sql
     # u1 updates database from v1 to v2
-    for v in range(2, required_version + 1):
-        sql_file_name = 'sql/vflv.u%d.sql' % (v-1)
+    for v in range(current_version, required_version):
+        new_version = (v + 1)
+        sql_file_name = 'sql/vflv.u%d.sql' % v
+
         if os.path.exists('LunchVoting/%s' % sql_file_name):
             with app.open_resource(sql_file_name, mode='r') as f:
                 db.cursor().executescript(f.read())
+            
+            db.execute('update config set value=? where name=?', [new_version, 'DATABASE_VERSION'])
             db.commit()
-            print(' * Updating the database to v%d' % v)
+            print(' * Updating the database to v%d' % new_version)
 
 
 
