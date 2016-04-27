@@ -58,6 +58,9 @@
   <ItemGroup>
     <Content Include="LunchVoting\sql\vflv.u1.sql" />
     <Content Include="LunchVoting\sql\vflv.sql" />
+    <Content Include="LunchVoting\static\content\style.css">
+      <SubType>Code</SubType>
+    </Content>
     <Content Include="LunchVoting\templates\passwd.html" />
     <Content Include="LunchVoting\templates\detail.html" />
     <Content Include="LunchVoting\templates\voting.html" />
