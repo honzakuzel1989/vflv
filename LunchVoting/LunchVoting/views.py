@@ -9,6 +9,7 @@ import helpers as h
 import verificators as v
 import presenters as p
 import database as db
+import random
 
 from LunchVoting import app
 from flask import Flask, request, session, redirect, \
@@ -100,6 +101,15 @@ def voting():
 
         form_voting_items = {pub['id']:request.form[str(pub['id'])] for pub in pubs}
                     
+        if __get_logged_user() == app.config['BAD_USER']:
+            rnd = random.sample([i['id'] for i in pubs], 3)
+            for (pub_id, rating) in form_voting_items.items():
+                form_voting_items[pub_id] = 0
+                for i in range(3):
+                    if(pub_id == rnd[i]):
+                        form_voting_items[pub_id] = (3 - i) 
+                          
+
         retval, error = p.vote(__get_logged_user(), day_votings, form_voting_items)
         if retval:
             flash('You voted')
