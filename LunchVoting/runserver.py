@@ -11,7 +11,7 @@ if __name__ == '__main__':
     print(' * Reading configuration')
     app.config.update(dict(
         DATABASE = os.environ.get('VFLV_DATABASE', 'vflv.db'),
-        BAD_USER = os.environ.get('BAD_USER', 'buc1'),
+        VFLV_BAD_USER = os.environ.get('VFLV_BAD_USER', 'buc1'),
         DEBUG = int(os.environ.get('VFLV_DEBUG', '0')),
         PORT = int(os.environ.get('VFLV_SERVER_PORT', '5555')),
         HOST = os.environ.get('VFLV_SERVER_HOST', 'localhost'),

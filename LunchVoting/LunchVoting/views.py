@@ -101,7 +101,7 @@ def voting():
 
         form_voting_items = {pub['id']:request.form[str(pub['id'])] for pub in pubs}
                     
-        if __get_logged_user() == app.config['BAD_USER']:
+        if __get_logged_user() == app.config['VFLV_BAD_USER']:
             rnd = random.sample([i['id'] for i in pubs], 3)
             for (pub_id, rating) in form_voting_items.items():
                 form_voting_items[pub_id] = 0
