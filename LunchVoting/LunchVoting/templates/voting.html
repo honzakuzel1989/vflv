@@ -5,7 +5,7 @@
 <form action="{{ url_for('voting') }}" method="post">
     <dl>
         {% for (pub, voting, sum) in pubs_items %}
-            <dt><a href="{{ pub.url }}">{{ pub.title|e }}</a>, &Sigma; {{ sum }}</dt>
+            <dt><a target="_blank" href="{{ pub.url }}">{{ pub.title|e }}</a>, &Sigma; {{ sum }}</dt>
             {% if voting and voting.rating > 0 %}
             <dd><input type="text" name="{{ pub.id }}" value="{{ voting.rating }}"></dd>
             {% else %}
