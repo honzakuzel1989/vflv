@@ -60,6 +60,7 @@ target/
 *.suo
 bin
 obj
+.vs
 
 # stdio
 IN

@@ -133,7 +133,7 @@ def detail():
     votings = dal.get_actual_voting_for_all_user()
     detail_items = {}
     for v in votings:
-        detail_items.setdefault(v['pub'], []).append((v['user'], v['rating']))
+        detail_items.setdefault(v['pub'], []).append((v['nickname'], v['rating']))
     detail_items = sorted(detail_items.items())
 
     # GET

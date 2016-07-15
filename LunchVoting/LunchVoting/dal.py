@@ -19,7 +19,7 @@ def get_pubs():
     
 def get_actual_voting_for_all_user():
     db = d.get_db()
-    cur = db.execute('select * from votings where date=?', 
+    cur = db.execute('select votings.*, users.nickname from votings, users where date=? and user=name', 
         [h.get_current_time_in_s()])
     entries = cur.fetchall()
     return entries

@@ -18,7 +18,7 @@ if __name__ == '__main__':
         SECRET_KEY = os.environ.get('VFLV_SECRET_KEY', 
             '\xed\x8ege\xea}\x03\xc0\x8c$$\x98\xa4N\xa8\xb6\xf0k\x8a\x86\xe4\xa9\x19\xb7\x8a$'),
         # required version
-        DATABASE_VERSION = int(os.environ.get('VFLV_DATABASE_VERSION', '2'))
+        DATABASE_VERSION = int(os.environ.get('VFLV_DATABASE_VERSION', '3'))
         ))
     app.config.from_envvar('VFLV_SETTINGS', silent=True)
     print(app.config)
